@@ -3,11 +3,14 @@ CLI = Command Line Interface. This will allow any user to run the code from the 
 Basically, no need to run the whole notebook. """
 
 import argparse #Needed to parse our command line arguments 
+import joblib #Needed to save our model 
+import os #Needed to make sure our "Model" folder exists 
+from sklearn.metrics import accuracy_score, classification_report
 
 #Import our functions that we will need
-from code.data_ingestion import load_csv_from_path
-from code.data_cleaning import clean_data
-from code.model_train_and_evaluate import train_knn, train_logistic_regression, train_SVM, train_naive_bayes
+from src.data_ingestion import load_csv_from_path
+from src.data_cleaning import clean_data
+from src.model_train_and_evaluate import train_knn, train_logistic_regression, train_SVM, train_naive_bayes
 
 #We define our CLI arguments 
 parser = argparse.ArgumentParser()
@@ -39,9 +42,19 @@ model_map = {
     "svm": train_SVM,
     "naive": train_naive_bayes
 }
-#Train the selected model 
+#Train and Save  the selected model 
+os.makedirs('Models', exist_ok=True)
+
+# Train the selected model
 if args.model in model_map:
     model, _ = model_map[args.model](X_train, y_train, X_test, y_test)
-print(f"Model {args.model} trained and evaluated.")
+    print(f"Model {args.model} trained and evaluated.")
+
+    # Save the model
+    model_path = f"models/{args.model}_model.pkl"
+    joblib.dump(model, model_path)
+    print(f"{args.model.capitalize()} model saved as {model_path}")
+else:
+    print("Invalid model name. Choose from:", list(model_map.keys()))
 
 #Example: python cli_run.py --model svm --train_path source/data/Train.csv --test_path source/data/Test.csv
