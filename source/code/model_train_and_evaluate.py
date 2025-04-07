@@ -64,7 +64,7 @@ def train_logistic_regression(X_train, y_train, X_test, y_test):
 
     # Print the classification report
     print(classification_report(y_test, y_pred))
-    return grid_search.best_params_, pipeline
+    return grid_search.best_estimator_, pipeline
 
 def train_SVM(X_train, y_train, X_test, y_test):
     #SVM with SGD classifier
@@ -99,7 +99,7 @@ def train_SVM(X_train, y_train, X_test, y_test):
 
 def train_knn(X_train, y_train, X_test, y_test):
     # Define the pipeline with TF-IDF vectorizer and K-Nearest Neighbors classifier
-    pipeline_knn = Pipeline([
+    pipeline = Pipeline([
         ('tfidf', TfidfVectorizer(stop_words='english')),
         ('classifier', KNeighborsClassifier())
     ])
@@ -113,7 +113,7 @@ def train_knn(X_train, y_train, X_test, y_test):
     }   
 
     # Perform GridSearchCV for hyperparameter tuning
-    grid_search_knn = GridSearchCV(pipeline_knn, param_grid_knn, cv=3, n_jobs=-1, verbose=1)
+    grid_search_knn = GridSearchCV(pipeline, param_grid_knn, cv=3, n_jobs=-1, verbose=1)
 
     # Fit the model with hyperparameter tuning
     grid_search_knn.fit(X_train, y_train)
@@ -126,5 +126,5 @@ def train_knn(X_train, y_train, X_test, y_test):
 
     # Print the classification report
     print(classification_report(y_test, y_pred_knn))
-    return grid_search_knn.best_params_, pipeline_knn
+    return grid_search_knn.best_estimator_, pipeline
 
