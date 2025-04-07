@@ -1,1 +1,1 @@
-
+from code.data_ingestion import load_csv_from_path

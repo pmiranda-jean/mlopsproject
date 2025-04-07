@@ -1,7 +1,5 @@
-from scipy.stats import skew
 import matplotlib as plt
 from wordcloud import WordCloud
-import matplotlib.pyplot as plt
 from collections import Counter
 
 def missing_value(data): 
@@ -18,20 +16,6 @@ def value_count(data):
    label_counts = data["label"].value_counts()
    print(label_counts)
    return 0 
-
-def skewness(data): 
-   pandas_skew = data.select_dtypes(include=['number']).skew()
-   scipy_skew = {col: skew(data[col]) for col in data.select_dtypes(include=['number']).columns}
-   if skewness > 1:
-    return "Highly Right-Skewed"
-   elif skewness > 0.5:
-    return "Moderately Right-Skewed"
-   elif skewness < -1:
-    return "Highly Left-Skewed"
-   elif skewness < -0.5:
-     return "Moderately Left-Skewed"
-   else:
-     return "Symmetrical"
    
 def plot_label_distribution(labels, title="Label Distribution"):
     label_counts = labels.value_counts()
