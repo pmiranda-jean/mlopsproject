@@ -21,9 +21,9 @@ class TextInput(BaseModel):
 
 #Function that will predict if the text is positive or negative based on the model selected 
 def predict(input: TextInput):
-    model_path = f"models/model_{input.model_name}.pkl"
+    model_path = f"models/model_{input.model_name}.pkl" #Path to the previously saved model 
 
-    if not os.path.exists(model_path):
+    if not os.path.exists(model_path): #To ensure the models have been saved before using the API
         return {"error": f"Model '{input.model_name}' not found at path '{model_path}'."}
 
     try:
@@ -31,22 +31,10 @@ def predict(input: TextInput):
     except Exception as e:
         return {"error": f"Error loading the model: {str(e)}"}
 
-    # Create a DataFrame from the input text
-    input_data = pd.DataFrame({ 'text': [input.text] })  # Create DataFrame with column 'text'
+    input_data = pd.DataFrame({ 'text': [input.text] })  #Create DataFrame with column 'text'
 
-    try:
-        # Clean the input text using the clean_data function
-        cleaned_data = clean_data(input_data, text_column='text')
-    except Exception as e:
-        return {"error": f"Error during text cleaning: {str(e)}"}
+    cleaned_data = clean_data(input_data, text_column='text') #Clean the input text using the clean_data function
+    cleaned_text = cleaned_data['cleaned_text'] #Get cleaned text
+    prediction = model.predict(cleaned_text)[0] #Predict using the cleaned text
 
-    # Extract cleaned text
-    cleaned_text = cleaned_data['cleaned_text']
-
-    try:
-        # Predict using the cleaned text
-        prediction = model.predict(cleaned_text)[0]
-    except Exception as e:
-        return {"error": f"Error during prediction: {str(e)}"}
-
-    return {"prediction": int(prediction)}
+    return {"prediction": int(prediction)} #Return the prediction as an integer (0 = Negative, 1= Positive)

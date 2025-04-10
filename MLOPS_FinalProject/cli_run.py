@@ -14,7 +14,7 @@ from src.model_evaluate import model_evaluate_from_saved_file
 
 #We define our CLI arguments 
 parser = argparse.ArgumentParser(description="CLI for model training and evaluation")
-parser.add_argument("--mode", choices=["train", "evaluate"], required=True, help="Choose 'train' or 'evaluate'")
+parser.add_argument("--mode", choices=["train", "evaluate"], required=True, help="Choose 'train' or 'evaluate'") #If we want to train or evaluate
 parser.add_argument("--model", choices=["knn", "logistic", "svm", "naive"], required=True) #The Model we want to train 
 parser.add_argument("--train_path", type=str, help="The path to the training dataset") #The path to the training dataset
 parser.add_argument("--test_path", type=str, required=True, help="The path to the testing dataset") #The path to the testing dataset 
@@ -32,7 +32,6 @@ test_cleaned = clean_data(test_data, "text")
 #Split the Data 
 X_train = train_cleaned["text"]
 y_train = train_cleaned["label"]
-
 X_test = test_cleaned["text"]
 y_test = test_cleaned["label"]
 
@@ -43,12 +42,13 @@ model_map = {
     "svm": train_svm,
     "naive": train_nb
 }
+
 # Train mode
 if args.mode == "train":
     if not args.train_path:
         raise ValueError("Training path must be provided in train mode.")
 
-    os.makedirs('models', exist_ok=True)
+    os.makedirs('models', exist_ok=True) #Make sure the folder exists 
 
     if args.model in model_map:
         model = model_map[args.model](X_train, y_train)
