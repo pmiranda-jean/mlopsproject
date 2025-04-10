@@ -1,34 +1,22 @@
-import re
-import nltk
-from nltk.corpus import stopwords
-nltk.download('stopwords')
+import re #Needed to remove punctuation, URLs, mentions, digits, and hashtags
 
-#Data Cleaning
 def clean_data(data, text_column):
-  stop_words = set(stopwords.words('english'))
-  def clean_text(text):
-    #The words removed from our datacleaning were added following the word cloud analysis presented later on. This is explained in the report.
-    text = text.lower()
-    text = re.sub(r'[^\w\s]', '', text)
-    text = re.sub(r'http\S+|www\S+|https\S+', '', text)
-    text = re.sub(r'@\w+', '', text)
-    text = re.sub(r'#', '', text)
-    text = re.sub(r'\d+', '', text)
-    text = re.sub(r'film', '', text)
-    text = re.sub(r'movie', '', text)
-    text = re.sub(r'one', '', text)
-    text = re.sub(r'show', '', text)
-    text = re.sub(r'character', '', text)
-    text = re.sub(r'br', '', text)
-    text = re.sub(r'story', '', text)
-    text = re.sub(r'see', '', text)
-    text = re.sub(r'even', '', text)
-    text = re.sub(r'make', '', text)
-    text = re.sub(r'time', '', text)
-    text = re.sub(r'scene', '', text)
+    def clean_text(text):
+        #Simple standardization of text
+        text = text.lower()
+        
+        #To Remove punctuation, URLs, mentions, digits, and hashtags since comments from online 
+        text = re.sub(r'[^\w\s]', '', text)
+        text = re.sub(r'http\S+|www\S+|https\S+', '', text)
+        text = re.sub(r'@\w+', '', text)
+        text = re.sub(r'#', '', text)
+        text = re.sub(r'\d+', '', text)
+        
+        #Strip any extra spaces
+        text = ' '.join([word for word in text.split()])
+        
+        return text
 
-    text = ' '.join([word for word in text.split() if word not in stop_words])
-    return text
-
-  data["cleaned_text"] = data[text_column].apply(clean_text)
-  return data
+    #Apply the cleaning function of the text column 
+    data["cleaned_text"] = data[text_column].apply(clean_text)
+    return data
