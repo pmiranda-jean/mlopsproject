@@ -1,24 +1,52 @@
-from fastapi import FastAPI
-from pydantic import BaseModel
-import joblib
+"""Objective: 
+With this, we will have the user post a review of a movie and determine with one of the loaded models if it is a 
+positive or negative review."""
 
-# Load model and pipeline
-model, pipeline = joblib.load("model.pkl")
+from fastapi import FastAPI #To create my web application 
+from pydantic import BaseModel #For my incoming requests
+import joblib #For my saved models 
+import os #To check if the model file exists before trying to import it
+from src.data_cleaning import clean_data #Need this function for my prediction 
+import pandas as pd
 
-# Define the input structure
+app = FastAPI() #Initiate new API instance 
+
+#This defines the structure the input should have. 
 class TextInput(BaseModel):
-    text: str
+    text: str 
+    model_name: str
 
-# Initialize FastAPI app
-app = FastAPI()
-
-@app.get("/")
-def home():
-    return {"message": "Welcome to the Toxic Comment Classifier API!"}
-
+#Create my POST endpoint 
 @app.post("/predict")
-def predict(input_data: TextInput):
-    # Clean and predict
-    transformed = pipeline.transform([input_data.text])
-    prediction = model.predict(transformed)
-    return {"prediction": int(prediction[0])}
+
+#Function that will predict if the text is positive or negative based on the model selected 
+def predict(input: TextInput):
+    model_path = f"models/model_{input.model_name}.pkl"
+
+    if not os.path.exists(model_path):
+        return {"error": f"Model '{input.model_name}' not found at path '{model_path}'."}
+
+    try:
+        model = joblib.load(model_path)
+    except Exception as e:
+        return {"error": f"Error loading the model: {str(e)}"}
+
+    # Create a DataFrame from the input text
+    input_data = pd.DataFrame({ 'text': [input.text] })  # Create DataFrame with column 'text'
+
+    try:
+        # Clean the input text using the clean_data function
+        cleaned_data = clean_data(input_data, text_column='text')
+    except Exception as e:
+        return {"error": f"Error during text cleaning: {str(e)}"}
+
+    # Extract cleaned text
+    cleaned_text = cleaned_data['cleaned_text']
+
+    try:
+        # Predict using the cleaned text
+        prediction = model.predict(cleaned_text)[0]
+    except Exception as e:
+        return {"error": f"Error during prediction: {str(e)}"}
+
+    return {"prediction": int(prediction)}

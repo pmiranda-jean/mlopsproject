@@ -1,0 +1,27 @@
+[tool.poetry]
+name = "mlopsproject"
+version = "0.1.0"
+description = "MLOPs Final Project"
+license = "MIT"
+authors = [
+    "Alexandre Ben Haïm <b00811864@essec.edu>",
+    "Léo Blanc <b00810822@essec.edu>",
+    "Juliette Lacroix <b00814203@essec.edu>",
+    "Philippe Miranda-Jean <b00809938@essec.edu>", 
+    "Théo Rossi <b00811854@essec.edu>"
+]
+readme = "README.md"
+packages = [{ include = "src" }]
+
+[tool.poetry.dependencies]
+python = ">=3.11,<4.0"
+pandas = "^2.2.3"
+scikit-learn = "^1.6.1"
+joblib = "^1.4.2"
+fastapi = "^0.115.12"
+uvicorn = "^0.34.0"
+
+[build-system]
+requires = ["poetry-core>=2.0.0"]
+build-backend = "poetry.core.masonry.api"
+
